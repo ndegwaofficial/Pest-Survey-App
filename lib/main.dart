@@ -1,70 +1,87 @@
 import 'package:flutter/material.dart';
+import 'services/auth_service.dart';
+import 'screens/dashboards/farmer_dashboard.dart';
+import 'screens/dashboards/fso_dashboard.dart';
+import 'screens/dashboards/moderator_dashboard.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  runApp(PestApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class PestApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Pest Distribution Surveillance App',
+      title: 'Pest Survey App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.green,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: LoginScreen(), //set the initial screen as the Login Page
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
+class LoginScreen extends StatefulWidget { //Handle login functionality, Allow Dynamic Updates to UI
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _LoginScreenState extends State<LoginScreen> { //Manage actual state of Login Screen
+  final AuthService _authService = AuthService();
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  // Login Logic (_logic() method responsible for authenticating user)
+  Future<void> _login(String email, String password) async {
+    var user = await _authService.login(email, password);
+    if (user != null) {
+      String role = user['role'];
+      //Replace the current screen with the appropriate dashboard
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => _getDashboardForRole(role),
+        ),
+      );
+    } else {
+      // Handle login failure
+    }
+  }
+
+// Method to decide which dashboard to display
+  Widget _getDashboardForRole(String role) {
+    if (role == 'FSO') return FSODashboard();
+    if (role == 'Farmer') return FarmerDashboard();
+    if (role == 'Moderator') return ModeratorDashboard();
+    //TODO: Handle this error more robustly
+    return Container(); // Return Empty container if role doesn't match any of the three. 
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text('Login'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            TextField(
+              decoration: InputDecoration(hintText: 'Email'),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            TextField(
+              decoration: InputDecoration(hintText: 'Password'),
+              obscureText: true,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _login('email@example.com', 'password123');
+              },
+              child: Text('Login'),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), 
     );
   }
 }
