@@ -28,6 +28,10 @@ dev_dependencies:
 
   flutter_lints: ^4.0.0
 
+assets:
+  - assets/pest_model.tflite
+  - assets/labels.txt
+
 flutter:
 
   uses-material-design: true
