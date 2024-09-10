@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'services/auth_service.dart';
+import 'services/authentication/auth_service.dart';
 import 'screens/dashboards/farmer_dashboard.dart';
 import 'screens/dashboards/fso_dashboard.dart';
 import 'screens/dashboards/moderator_dashboard.dart';
