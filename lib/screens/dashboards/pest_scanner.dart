@@ -34,11 +34,11 @@ class _PestScannerState extends State<PestScanner> {
   }
   Future<void> _fetchPestDetails(String pestName) async {
   final connection = PostgreSQLConnection(
-    'your_database_url',
+    'localhost',
     5432,
-    'your_database_name',
-    username: 'your_username',
-    password: 'your_password',
+    'pestsurveillance',
+    username: 'postgres',
+    password: '',
   );
 
   await connection.open();
