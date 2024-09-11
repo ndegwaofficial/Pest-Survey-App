@@ -49,29 +49,73 @@ class _SurveyFormState extends State<SurveyForm> {
       await _submitSurveyToDatabase(surveyData);
     }
   }
+Future<void> _submitSurveyToDatabase(Map<String, String> surveyData) async {
+  final connection = PostgreSQLConnection(
+    'localhost',
+    5432,
+    'pestsurveillance',
+    username: 'postgres',
+    password: '',
+  );
 
-  Future<void> _submitSurveyToDatabase(Map<String, String> surveyData) async {
-    final connection = PostgreSQLConnection(
-      'your_database_url',
-      5432,
-      'your_database_name',
-      username: 'your_username',
-      password: 'your_password',
-    );
+  try {
     await connection.open();
 
-    // Insert survey into the database (modify according to your table schema)
+    // Insert survey into the database
     await connection.query('''
       INSERT INTO surveys (fso_id, survey_type, survey_results, created_at)
       VALUES (@fso_id, @survey_type, @survey_results, NOW())
     ''', substitutionValues: {
-      'fso_id': 1, // Example FSO ID, use actual ID in real implementation
+      'fso_id': 1, // Example FSO ID
       'survey_type': widget.surveyType,
       'survey_results': surveyData.toString(),
     });
 
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Survey submitted successfully!'),
+    ));
+
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Error submitting survey: $e'),
+    ));
+
+    // Show option to retry the submission
+    _showSubmissionErrorDialog();
+  } finally {
     await connection.close();
   }
+}
+
+Future<void> _showSubmissionErrorDialog() async {
+  bool retry = await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Submission Failed'),
+        content: Text('An error occurred while submitting the survey. Would you like to retry?'),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          ),
+          TextButton(
+            child: Text('Retry'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          ),
+        ],
+      );
+    },
+  ) ?? false;
+
+  if (retry) {
+    _submitForm(); // Retry submission
+  }
+}
 
   @override
   Widget build(BuildContext context) {
