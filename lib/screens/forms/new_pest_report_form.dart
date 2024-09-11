@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:postgres/postgres.dart';
 
 class NewPestReportForm extends StatefulWidget {
+  const NewPestReportForm({super.key});
+
   @override
   _NewPestReportFormState createState() => _NewPestReportFormState();
 }
@@ -34,7 +36,7 @@ class _NewPestReportFormState extends State<NewPestReportForm> {
 
       await connection.close();
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Pest report submitted successfully!'),
       ));
 
@@ -46,7 +48,7 @@ class _NewPestReportFormState extends State<NewPestReportForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('New Pest Report'),
+        title: const Text('New Pest Report'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -56,7 +58,7 @@ class _NewPestReportFormState extends State<NewPestReportForm> {
             children: [
               TextFormField(
                 controller: _pestNameController,
-                decoration: InputDecoration(labelText: 'Pest Name'),
+                decoration: const InputDecoration(labelText: 'Pest Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the pest name';
@@ -66,7 +68,7 @@ class _NewPestReportFormState extends State<NewPestReportForm> {
               ),
               TextFormField(
                 controller: _locationController,
-                decoration: InputDecoration(labelText: 'Location'),
+                decoration: const InputDecoration(labelText: 'Location'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the location';
@@ -76,7 +78,7 @@ class _NewPestReportFormState extends State<NewPestReportForm> {
               ),
               TextFormField(
                 controller: _detailsController,
-                decoration: InputDecoration(labelText: 'Details'),
+                decoration: const InputDecoration(labelText: 'Details'),
                 maxLines: 3,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -85,10 +87,10 @@ class _NewPestReportFormState extends State<NewPestReportForm> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submitReport,
-                child: Text('Submit Report'),
+                child: const Text('Submit Report'),
               ),
             ],
           ),

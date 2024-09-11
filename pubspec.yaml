@@ -8,22 +8,22 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_map: ^0.14.0 # for map visualization
+  flutter_map: ^4.0.0 # for map visualization
   http: ^0.13.4 # for HTTP requests
   dio: ^5.0.0 # for interacting with the backend
   postgres: ^2.0.0 # for PostgreSQL database connection
   provider: ^6.0.0 # for state management
-  flutter_local_notifications: ^9.0.0 # for notifications
-  camera: ^0.9.8 # for camera functionality
+  flutter_local_notifications: ^17.2.2 # for notifications
+  camera_android: ^0.10.9 # for camera functionality
   image_picker: ^0.8.4+8 # optional for picking images from gallery
-  tflite_flutter: ^0.9.0 # TensorFlow Lite library for model inference
-  tflite_flutter_helper: ^0.2.1 # for image processing
+  tflite_flutter: ^0.11.0 # TensorFlow Lite library for model inference
   excel: ^2.0.6 # for handling Excel file parsing
   latlong2: ^0.8.1
   cupertino_icons: ^1.0.8
   permission_handler: ^10.2.0
   path_provider: ^2.0.9
   path: ^1.8.0
+  ffi: ^2.0.1
 
 
 dev_dependencies:

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:postgres/postgres.dart';
 
 class ReviewReportsScreen extends StatefulWidget {
+  const ReviewReportsScreen({super.key});
+
   @override
   _ReviewReportsScreenState createState() => _ReviewReportsScreenState();
 }
@@ -58,7 +60,7 @@ class _ReviewReportsScreenState extends State<ReviewReportsScreen> {
 
     await connection.close();
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Report approved'),
     ));
 
@@ -69,7 +71,7 @@ class _ReviewReportsScreenState extends State<ReviewReportsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Review Pest Reports'),
+        title: const Text('Review Pest Reports'),
       ),
       body: ListView.builder(
         itemCount: _reports.length,
@@ -83,7 +85,7 @@ class _ReviewReportsScreenState extends State<ReviewReportsScreen> {
               onPressed: () {
                 _approveReport(report['id']);
               },
-              child: Text('Approve'),
+              child: const Text('Approve'),
             ),
           );
         },

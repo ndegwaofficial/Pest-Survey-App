@@ -3,6 +3,8 @@ import 'package:pest_survey_app/screens/forms/survey_form.dart';
 import 'package:postgres/postgres.dart';
 
 class PestListScreen extends StatefulWidget {
+  const PestListScreen({super.key});
+
   @override
   _PestListScreenState createState() => _PestListScreenState();
 }
@@ -60,13 +62,13 @@ class _PestListScreenState extends State<PestListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pest Lists'),
+        title: const Text('Pest Lists'),
       ),
       body: DefaultTabController(
         length: 2,
         child: Column(
           children: [
-            TabBar(
+            const TabBar(
               tabs: [
                 Tab(text: 'Country Pest List'),
                 Tab(text: 'Global Pest List'),
@@ -109,7 +111,7 @@ class _PestListScreenState extends State<PestListScreen> {
                 ),
               );
             },
-            child: Text('Perform Detection Survey'),
+            child: const Text('Perform Detection Survey'),
           ),
         );
       },

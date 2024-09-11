@@ -42,3 +42,10 @@ android {
 flutter {
     source = "../.."
 }
+
+// Added this block to specify the Kotlin version
+ext.kotlin_version = '1.8.0'
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}

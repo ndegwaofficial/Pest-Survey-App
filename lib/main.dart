@@ -10,6 +10,8 @@ void main() {
 }
 
 class PestApp extends StatelessWidget {
+  const PestApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,7 +24,9 @@ class PestApp extends StatelessWidget {
   }
 }
 
-class LoginScreen extends StatefulWidget { //Handle login functionality, Allow Dynamic Updates to UI
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+ //Handle login functionality, Allow Dynamic Updates to UI
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -60,16 +64,16 @@ class _LoginScreenState extends State<LoginScreen> { //Manage actual state of Lo
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: const Text('Login'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TextField(
+            const TextField(
               decoration: InputDecoration(hintText: 'Email'),
             ),
-            TextField(
+            const TextField(
               decoration: InputDecoration(hintText: 'Password'),
               obscureText: true,
             ),
@@ -77,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> { //Manage actual state of Lo
               onPressed: () {
                 _login('email@example.com', 'password123');
               },
-              child: Text('Login'),
+              child: const Text('Login'),
             ),
           ],
         ),

@@ -6,7 +6,7 @@ class SurveyForm extends StatefulWidget {
   final String surveyType;
   final String? initialPestName; //Pre-filled pest name
 
-  SurveyForm(String s, {required this.surveyType, this.initialPestName});
+  const SurveyForm(String s, {super.key, required this.surveyType, this.initialPestName});
 
   @override
   _SurveyFormState createState() => _SurveyFormState();
@@ -71,7 +71,7 @@ Future<void> _submitSurveyToDatabase(Map<String, String> surveyData) async {
       'survey_results': surveyData.toString(),
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Survey submitted successfully!'),
     ));
 
@@ -92,17 +92,17 @@ Future<void> _showSubmissionErrorDialog() async {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Submission Failed'),
-        content: Text('An error occurred while submitting the survey. Would you like to retry?'),
+        title: const Text('Submission Failed'),
+        content: const Text('An error occurred while submitting the survey. Would you like to retry?'),
         actions: <Widget>[
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
           ),
           TextButton(
-            child: Text('Retry'),
+            child: const Text('Retry'),
             onPressed: () {
               Navigator.of(context).pop(true);
             },
@@ -124,7 +124,7 @@ Future<void> _showSubmissionErrorDialog() async {
         title: Text('${widget.surveyType.capitalize()} Survey'),
       ),
       body: _fields.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Form(
@@ -142,11 +142,11 @@ Future<void> _showSubmissionErrorDialog() async {
                           return null;
                         },
                       );
-                    }).toList(),
-                    SizedBox(height: 20),
+                    }),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _submitForm,
-                      child: Text('Submit Survey'),
+                      child: const Text('Submit Survey'),
                     ),
                   ],
                 ),

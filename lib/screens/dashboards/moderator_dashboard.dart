@@ -4,11 +4,13 @@ import 'map_screen.dart'; // Assuming pest distribution map is in this file
 import 'review_reports_screen.dart'; // For reviewing pest reports
 
 class ModeratorDashboard extends StatelessWidget {
+  const ModeratorDashboard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Moderator Dashboard'),
+        title: const Text('Moderator Dashboard'),
       ),
       body: Center(
         child: Column(
@@ -21,7 +23,7 @@ class ModeratorDashboard extends StatelessWidget {
                  MaterialPageRoute(builder: (context) => PestListScreen()),
                  );
              },
-             child: Text('View Pest Lists')),
+             child: const Text('View Pest Lists')),
 
             ElevatedButton(
               onPressed: () {
@@ -30,9 +32,9 @@ class ModeratorDashboard extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => MapScreen()), // Navigate to map visualization
                 );
               },
-              child: Text('View Pest Distribution Map'),
+              child: const Text('View Pest Distribution Map'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -40,9 +42,9 @@ class ModeratorDashboard extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => ReviewReportsScreen()), // Navigate to report review
                 );
               },
-              child: Text('Review Pest Reports'),
+              child: const Text('Review Pest Reports'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -50,7 +52,7 @@ class ModeratorDashboard extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => PestListScreen()), // Navigate to pest management
                 );
               },
-              child: Text('Manage Pests'),
+              child: const Text('Manage Pests'),
             ),
           ],
         ),

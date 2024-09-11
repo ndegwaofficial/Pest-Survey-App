@@ -4,6 +4,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:postgres/postgres.dart';
 
 class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
+
   @override
   _MapScreenState createState() => _MapScreenState();
 }
@@ -42,7 +44,7 @@ class _MapScreenState extends State<MapScreen> {
         point: LatLng(lat, lng),
         builder: (ctx) => Tooltip(
           message: pestName,
-          child: Icon(Icons.bug_report, color: Colors.red, size: 30),
+          child: const Icon(Icons.bug_report, color: Colors.red, size: 30),
         ),
       );
     }).toList();
@@ -58,19 +60,19 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pest Distribution Map'),
+        title: const Text('Pest Distribution Map'),
       ),
       body: FlutterMap(
         options: MapOptions(
           center: LatLng(0, 0), // Default center of the map
           zoom: 2.0, // Default zoom level
         ),
-        layers: [
-          TileLayerOptions(
+        children: [
+          TileLayer(
             urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: ['a', 'b', 'c'],
+            subdomains: const ['a', 'b', 'c'],
           ),
-          MarkerLayerOptions(
+          MarkerLayer(
             markers: _pestMarkers,
           ),
         ],

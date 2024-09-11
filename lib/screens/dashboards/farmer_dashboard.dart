@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pest_survey_app/screens/forms/new_pest_report_form.dart';
-import 'pest_scanner.dart'; 
+// import 'pest_scanner.dart'; 
 
 class FarmerDashboard extends StatelessWidget {
+  const FarmerDashboard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Farmer Dashboard'),
+        title: const Text('Farmer Dashboard'),
       ),
       body: Center(
         child: Column(
@@ -17,12 +19,12 @@ class FarmerDashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PestScanner()), // Navigate to pest scanner
+                  MaterialPageRoute(builder: (context) => NewPestReportForm()), // TODO: Navigate to pest scanner
                 );
               },
-              child: Text('Scan Pest'),
+              child: const Text('Scan Pest'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -30,11 +32,13 @@ class FarmerDashboard extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => NewPestReportForm()), // Navigate to pest report form
                 );
               },
-              child: Text('Report New Pest'),
+              child: const Text('Report New Pest'),
             ),
           ],
         ),
       ),
     );
   }
+
+
 }
