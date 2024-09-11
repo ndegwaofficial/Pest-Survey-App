@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'survey_form.dart';
+import '../forms/survey_form.dart';
 
 class FSODashboard extends StatelessWidget {
   @override
@@ -16,7 +16,7 @@ class FSODashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SurveyForm('delimiting')),
+                  MaterialPageRoute(builder: (context) => SurveyForm('delimiting', surveyType: '',)),
                 );
               },
               child: Text('Delimiting Survey'),
@@ -25,7 +25,7 @@ class FSODashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SurveyForm('monitoring')),
+                  MaterialPageRoute(builder: (context) => SurveyForm('monitoring', surveyType: '',)),
                 );
               },
               child: Text('Monitoring Survey'),
@@ -34,7 +34,7 @@ class FSODashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SurveyForm('detection')),
+                  MaterialPageRoute(builder: (context) => SurveyForm('detection', surveyType: '',)),
                 );
               },
               child: Text('Detection Survey'),

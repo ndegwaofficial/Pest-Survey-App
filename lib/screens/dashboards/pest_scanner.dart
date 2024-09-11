@@ -32,13 +32,13 @@ class _PestScannerState extends State<PestScanner> {
     await _controller.initialize();
     setState(() {});
   }
-Future<void> _fetchPestDetails(String pestName) async {
+  Future<void> _fetchPestDetails(String pestName) async {
   final connection = PostgreSQLConnection(
-    'localhost',
+    'your_database_url',
     5432,
-    'pestsurveillance',
-    username: 'postgres',
-    password: '',
+    'your_database_name',
+    username: 'your_username',
+    password: 'your_password',
   );
 
   await connection.open();
@@ -56,12 +56,56 @@ Future<void> _fetchPestDetails(String pestName) async {
     });
   } else {
     setState(() {
-      _result = 'Pest not found in database.';
+      _result = 'Pest not found in database. Would you like to submit a detection survey?';
     });
+    _showSurveyDialog(pestName);
   }
 
   await connection.close();
 }
+
+Future<void> _showSurveyDialog(String pestName) async {
+  bool submitSurvey = await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Pest Not Found'),
+        content: Text('The pest "$pestName" was not found in the database. Would you like to submit a detection survey?'),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(false); // Cancel
+            },
+          ),
+          TextButton(
+            child: Text('Submit Survey'),
+            onPressed: () {
+              Navigator.of(context).pop(true); // Proceed to survey
+            },
+          ),
+        ],
+      );
+    },
+  ) ?? false;
+
+  if (submitSurvey) {
+    _navigateToDetectionSurvey(pestName);
+  }
+}
+
+void _navigateToDetectionSurvey(String pestName) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => SurveyForm(
+        surveyType: 'detection',
+        initialPestName: pestName, // Pre-fill the pest name
+      ),
+    ),
+  );
+}
+
 
 Future<void> _captureAndDetect() async {
   if (!_controller.value.isInitialized) {

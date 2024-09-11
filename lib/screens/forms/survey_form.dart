@@ -4,8 +4,9 @@ import 'package:postgres/postgres.dart';
 
 class SurveyForm extends StatefulWidget {
   final String surveyType;
+  final String? initialPestName; //Pre-filled pest name
 
-  SurveyForm(this.surveyType);
+  SurveyForm(String s, {required this.surveyType, this.initialPestName});
 
   @override
   _SurveyFormState createState() => _SurveyFormState();
@@ -24,15 +25,18 @@ class _SurveyFormState extends State<SurveyForm> {
     _loadFields();
   }
 
-  Future<void> _loadFields() async {
+   Future<void> _loadFields() async {
     Map<String, List<String>> surveyFields = await _excelService.loadSurveyFields();
     setState(() {
       _fields = surveyFields[widget.surveyType]!;
       _controllers = {
-        for (var field in _fields) field: TextEditingController()
+        for (var field in _fields) field: TextEditingController(
+          text: (field.toLowerCase() == 'pest name') ? widget.initialPestName ?? '' : ''
+        )
       };
     });
   }
+
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
