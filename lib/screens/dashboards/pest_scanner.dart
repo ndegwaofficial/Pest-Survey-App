@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:pest_survey_app/screens/forms/survey_form.dart';
 import 'package:pest_survey_app/services/pest_detection_service.dart';
 import 'package:postgres/postgres.dart';
 import 'dart:io';
@@ -26,12 +28,23 @@ class _PestScannerState extends State<PestScanner> {
   }
 
   Future<void> _initializeCamera() async {
+     // Request camera permission
+  var status = await Permission.camera.request();
+
+  if (status.isGranted) {
     _cameras = await availableCameras();
     _controller = CameraController(_cameras[0], ResolutionPreset.high);
-
     await _controller.initialize();
     setState(() {});
+  } else {
+    setState(() {
+      _result = 'Camera permission denied';
+    });
   }
+  }
+
+
+
   Future<void> _fetchPestDetails(String pestName) async {
   final connection = PostgreSQLConnection(
     'localhost',
@@ -99,6 +112,7 @@ void _navigateToDetectionSurvey(String pestName) {
     context,
     MaterialPageRoute(
       builder: (context) => SurveyForm(
+        'detection',
         surveyType: 'detection',
         initialPestName: pestName, // Pre-fill the pest name
       ),
@@ -114,6 +128,7 @@ Future<void> _captureAndDetect() async {
 
   try {
     final tempDir = await getTemporaryDirectory();
+    print("Temporary Directory: ${tempDir.path}"); // Debugging
     final imagePath = '${tempDir.path}/${DateTime.now()}.jpg';
     await _controller.takePicture(imagePath);
 
@@ -139,6 +154,7 @@ Future<void> _captureAndDetect() async {
   }
 }
 
+//Dispose camera controller
   @override
   void dispose() {
     _controller.dispose();

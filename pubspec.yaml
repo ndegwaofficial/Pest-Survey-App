@@ -19,8 +19,12 @@ dependencies:
   tflite_flutter: ^0.9.0 # TensorFlow Lite library for model inference
   tflite_flutter_helper: ^0.2.1 # for image processing
   excel: ^2.0.6 # for handling Excel file parsing
-
+  latlong2: ^0.8.1
   cupertino_icons: ^1.0.8
+  permission_handler: ^10.2.0
+  path_provider: ^2.0.9
+
+
 
 dev_dependencies:
   flutter_test:
