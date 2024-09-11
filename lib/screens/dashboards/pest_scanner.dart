@@ -7,6 +7,8 @@ import 'package:pest_survey_app/services/pest_detection_service.dart';
 import 'package:postgres/postgres.dart';
 import 'dart:io';
 import '../../services/pest_detection_service.dart';
+import 'package:path/path.dart' as path;
+
 
 class PestScanner extends StatefulWidget {
   @override
@@ -126,18 +128,26 @@ Future<void> _captureAndDetect() async {
     return;
   }
 
+
+
   try {
+    // Capture the picture and get the XFile
+    final XFile imageFile = await _controller.takePicture();
+
+    // Get the temporary directory
     final tempDir = await getTemporaryDirectory();
-    print("Temporary Directory: ${tempDir.path}"); // Debugging
-    final imagePath = '${tempDir.path}/${DateTime.now()}.jpg';
-    await _controller.takePicture(imagePath);
+    final imagePath = path.join(tempDir.path, '${DateTime.now()}.jpg');
+
+    // Save the XFile to the desired location
+    File savedImage = File(imagePath);
+    await savedImage.writeAsBytes(await imageFile.readAsBytes());
 
     setState(() {
       _isProcessing = true;
     });
 
     // Run pest detection
-    String pestName = await _pestDetectionService.identifyPest(File(imagePath));
+    String pestName = await _pestDetectionService.identifyPest(savedImage);
 
     // Fetch pest details from the database
     await _fetchPestDetails(pestName);
