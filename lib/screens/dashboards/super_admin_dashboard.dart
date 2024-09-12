@@ -3,6 +3,9 @@ import 'package:pest_survey_app/screens/forms/add_moderator_form.dart';
 import 'package:postgres/postgres.dart';
 
 class SuperAdminDashboard extends StatefulWidget {
+  // Mark the constructor as const
+  const SuperAdminDashboard({Key? key}) : super(key: key); // Added const
+
   @override
   _SuperAdminDashboardState createState() => _SuperAdminDashboardState();
 }
@@ -45,7 +48,7 @@ class _SuperAdminDashboardState extends State<SuperAdminDashboard> {
   void _navigateToAddModerator() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddModeratorForm()),
+      MaterialPageRoute(builder: (context) => AddModeratorForm()), // Mark as const if possible
     ).then((_) => _fetchUsers()); // Refresh user list after adding a moderator
   }
 
@@ -53,13 +56,13 @@ class _SuperAdminDashboardState extends State<SuperAdminDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Super Admin Dashboard'),
+        title: const Text('Super Admin Dashboard'), // Mark as const
       ),
       body: Column(
         children: [
           ElevatedButton(
             onPressed: _navigateToAddModerator,
-            child: Text('Add Moderator'),
+            child: const Text('Add Moderator'), // Mark as const
           ),
           Expanded(
             child: ListView.builder(

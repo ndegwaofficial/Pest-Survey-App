@@ -19,27 +19,40 @@ class PestApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: LoginScreen(), //set the initial screen as the Login Page
+      home: const LoginScreen(), // Set the initial screen as the Login Page
     );
   }
 }
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
- //Handle login functionality, Allow Dynamic Updates to UI
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> { //Manage actual state of Login Screen
+class _LoginScreenState extends State<LoginScreen> {
   final AuthService _authService = AuthService();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String _errorMessage = '';
 
-  // Login Logic (_logic() method responsible for authenticating user)
-  Future<void> _login(String email, String password) async {
+  // Login Logic (_login() method responsible for authenticating user)
+  Future<void> _login() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter both email and password';
+      });
+      return;
+    }
+
     var user = await _authService.login(email, password);
     if (user != null) {
       String role = user['role'];
-      //Replace the current screen with the appropriate dashboard
+      // Replace the current screen with the appropriate dashboard
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -48,18 +61,24 @@ class _LoginScreenState extends State<LoginScreen> { //Manage actual state of Lo
       );
     } else {
       // Handle login failure
+      setState(() {
+        _errorMessage = 'Invalid login credentials';
+      });
     }
   }
 
-// Method to decide which dashboard to display
+  // Method to decide which dashboard to display
   Widget _getDashboardForRole(String role) {
-    if (role == 'FSO') return FSODashboard();
-    if (role == 'Farmer') return FarmerDashboard();
-    if (role == 'Moderator') return ModeratorDashboard();
-    if (role == 'Super Admin') return SuperAdminDashboard();
-    
-    //TODO: Handle this error more robustly
-    return Container(); // Return Empty container if role doesn't match any of the three. 
+    if (role == 'FSO') return const FSODashboard();
+    if (role == 'Farmer') return const FarmerDashboard();
+    if (role == 'Moderator') return const ModeratorDashboard();
+    if (role == 'Super Admin') return const SuperAdminDashboard();
+
+    return const Scaffold(
+      body: Center(
+        child: Text('Error: Unknown role'),
+      ),
+    );
   }
 
   @override
@@ -69,23 +88,38 @@ class _LoginScreenState extends State<LoginScreen> { //Manage actual state of Lo
         title: const Text('Login'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const TextField(
-              decoration: InputDecoration(hintText: 'Email'),
-            ),
-            const TextField(
-              decoration: InputDecoration(hintText: 'Password'),
-              obscureText: true,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _login('email@example.com', 'password123');
-              },
-              child: const Text('Login'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  hintText: 'Email',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  hintText: 'Password',
+                ),
+                obscureText: true,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _login, // Call the _login method
+                child: const Text('Login'),
+              ),
+              const SizedBox(height: 10),
+              if (_errorMessage.isNotEmpty)
+                Text(
+                  _errorMessage,
+                  style: const TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
         ),
       ),
     );
