@@ -3,7 +3,7 @@ import 'services/authentication/auth_service.dart';
 import 'screens/dashboards/farmer_dashboard.dart';
 import 'screens/dashboards/fso_dashboard.dart';
 import 'screens/dashboards/moderator_dashboard.dart';
-
+import 'screens/dashboards/super_admin_dashboard.dart';
 
 void main() {
   runApp(PestApp());
@@ -56,6 +56,8 @@ class _LoginScreenState extends State<LoginScreen> { //Manage actual state of Lo
     if (role == 'FSO') return FSODashboard();
     if (role == 'Farmer') return FarmerDashboard();
     if (role == 'Moderator') return ModeratorDashboard();
+    if (role == 'Super Admin') return SuperAdminDashboard();
+    
     //TODO: Handle this error more robustly
     return Container(); // Return Empty container if role doesn't match any of the three. 
   }
