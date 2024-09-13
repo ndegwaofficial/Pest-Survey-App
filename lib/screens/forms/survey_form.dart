@@ -1,163 +1,162 @@
 import 'package:flutter/material.dart';
-import '../../services/survey_form/excel_service.dart';
-import 'package:postgres/postgres.dart';
+import 'package:intl/intl.dart'; // For formatting the timestamp
+import 'package:pest_survey_app/services/survey_to_dbservice.dart';
+import 'survey_data.dart';
+// import 'database_sessrvice.dart'; // This file will handle database logic
 
-class SurveyForm extends StatefulWidget {
-  final String surveyType;
-  final String? initialPestName; //Pre-filled pest name
+class DynamicSurveyForm extends StatefulWidget {
+  final String? initialPestName; // New optional parameter for pest name
+  final String? preSelectedSurveyType; // New optional parameter for survey type
 
-  const SurveyForm(String s, {super.key, required this.surveyType, this.initialPestName});
+  DynamicSurveyForm({this.initialPestName, this.preSelectedSurveyType}); // Constructor update
 
   @override
-  _SurveyFormState createState() => _SurveyFormState();
+  _DynamicSurveyFormState createState() => _DynamicSurveyFormState();
 }
 
-class _SurveyFormState extends State<SurveyForm> {
+class _DynamicSurveyFormState extends State<DynamicSurveyForm> {
+  String? selectedSurveyType;
+  Map<String, dynamic> formData = {};
   final _formKey = GlobalKey<FormState>();
-  Map<String, TextEditingController> _controllers = {};
-  List<String> _fields = [];
-  late ExcelService _excelService;
+  TextEditingController officerController = TextEditingController(); // For officer's name
+  TextEditingController pestController = TextEditingController(); // For pest name
+  late String timestamp; // For timestamp
 
   @override
   void initState() {
     super.initState();
-    _excelService = ExcelService('/path/to/Surveillance Form.xlsx'); // Path to the uploaded Excel file
-    _loadFields();
-  }
+    timestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()); // Get the current timestamp
 
-   Future<void> _loadFields() async {
-    Map<String, List<String>> surveyFields = await _excelService.loadSurveyFields();
-    setState(() {
-      _fields = surveyFields[widget.surveyType]!;
-      _controllers = {
-        for (var field in _fields) field: TextEditingController(
-          text: (field.toLowerCase() == 'pest name') ? widget.initialPestName ?? '' : ''
-        )
-      };
-    });
-  }
-
-
-  Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      // Prepare data to submit
-      Map<String, String> surveyData = {
-        for (var field in _fields) field: _controllers[field]!.text
-      };
-
-      // Submit to PostgreSQL database
-      await _submitSurveyToDatabase(surveyData);
+    // Pre-fill pest name and survey type if provided
+    if (widget.initialPestName != null) {
+      pestController.text = widget.initialPestName!;
+    }
+    if (widget.preSelectedSurveyType != null) {
+      selectedSurveyType = widget.preSelectedSurveyType;
     }
   }
-Future<void> _submitSurveyToDatabase(Map<String, String> surveyData) async {
-  final connection = PostgreSQLConnection(
-    'localhost',
-    5432,
-    'pestsurveillance',
-    username: 'postgres',
-    password: '',
-  );
-
-  try {
-    await connection.open();
-
-    // Insert survey into the database
-    await connection.query('''
-      INSERT INTO surveys (fso_id, survey_type, survey_results, created_at)
-      VALUES (@fso_id, @survey_type, @survey_results, NOW())
-    ''', substitutionValues: {
-      'fso_id': 1, // Example FSO ID
-      'survey_type': widget.surveyType,
-      'survey_results': surveyData.toString(),
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Survey submitted successfully!'),
-    ));
-
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Error submitting survey: $e'),
-    ));
-
-    // Show option to retry the submission
-    _showSubmissionErrorDialog();
-  } finally {
-    await connection.close();
-  }
-}
-
-Future<void> _showSubmissionErrorDialog() async {
-  bool retry = await showDialog<bool>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Submission Failed'),
-        content: const Text('An error occurred while submitting the survey. Would you like to retry?'),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-          ),
-          TextButton(
-            child: const Text('Retry'),
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-          ),
-        ],
-      );
-    },
-  ) ?? false;
-
-  if (retry) {
-    _submitForm(); // Retry submission
-  }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.surveyType.capitalize()} Survey'),
+        title: Text('Dynamic Survey Form'),
       ),
-      body: _fields.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    ..._fields.map((field) {
-                      return TextFormField(
-                        controller: _controllers[field],
-                        decoration: InputDecoration(labelText: field),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter $field';
-                          }
-                          return null;
-                        },
-                      );
-                    }),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _submitForm,
-                      child: const Text('Submit Survey'),
-                    ),
-                  ],
-                ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Officer's name field
+              TextFormField(
+                controller: officerController,
+                decoration: InputDecoration(labelText: "Field Surveillance Officer's Name"),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter officer\'s name';
+                  }
+                  return null;
+                },
               ),
-            ),
+              SizedBox(height: 20),
+
+              // Pest name field
+              TextFormField(
+                controller: pestController,
+                decoration: InputDecoration(labelText: 'Pest Name'),
+                onChanged: (value) {
+                  formData['pest_name'] = value;
+                },
+              ),
+              SizedBox(height: 20),
+
+              // Survey Type Dropdown
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(labelText: 'Select Survey Type'),
+                value: selectedSurveyType, // Pre-select survey type if available
+                items: surveyFields.keys
+                    .map((surveyType) => DropdownMenuItem(
+                          value: surveyType,
+                          child: Text(surveyType),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedSurveyType = value;
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+
+              // Dynamic form fields based on the selected survey type
+              if (selectedSurveyType != null)
+                Expanded(
+                  child: ListView(
+                    children: surveyFields[selectedSurveyType]!
+                        .where((field) => field.isVisible)
+                        .map((field) => buildField(field))
+                        .toList(),
+                  ),
+                ),
+
+              SizedBox(height: 20),
+
+              // Display timestamp
+              Text("Timestamp: $timestamp"),
+
+              SizedBox(height: 20),
+
+              // Submit Button
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    formData['officer_name'] = officerController.text;
+                    formData['timestamp'] = timestamp;
+                    formData['pest_name'] = pestController.text;
+
+                    // Save to database
+                    await DatabaseService().saveSurveyData(formData);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Survey Saved')),
+                    );
+                  }
+                },
+                child: Text('Submit'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
-}
 
-extension StringExtension on String {
-  String capitalize() {
-    return this[0].toUpperCase() + substring(1);
+  // Create the form field widget dynamically
+  Widget buildField(SurveyField field) {
+    switch (field.fieldType) {
+      case 'text':
+        return TextFormField(
+          decoration: InputDecoration(labelText: field.fieldName),
+          onChanged: (value) {
+            formData[field.fieldName] = value;
+          },
+        );
+      case 'dropdown':
+        return DropdownButtonFormField<String>(
+          decoration: InputDecoration(labelText: field.fieldName),
+          items: field.options!
+              .map((option) => DropdownMenuItem(
+                    value: option,
+                    child: Text(option),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            formData[field.fieldName] = value;
+          },
+        );
+      default:
+        return SizedBox.shrink();
+    }
   }
 }

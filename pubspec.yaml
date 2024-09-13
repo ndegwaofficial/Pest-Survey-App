@@ -35,7 +35,7 @@ dev_dependencies:
 assets:
   - assets/pest_model.tflite
   - assets/labels.txt
-
+  - assets/Surveillance Form.xlsx
 flutter:
 
   uses-material-design: true

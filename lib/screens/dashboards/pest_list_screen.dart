@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pest_survey_app/screens/forms/survey_form.dart';
+import 'package:pest_survey_app/screens/forms/survey_form.dart';// Import the new DynamicSurveyForm
 import 'package:postgres/postgres.dart';
 
 class PestListScreen extends StatefulWidget {
@@ -30,12 +30,17 @@ class _PestListScreenState extends State<PestListScreen> {
     await connection.open();
 
     // Fetch Country Pest List
-    List<List<dynamic>> countryResults = await connection.query('SELECT id, name, category FROM pests WHERE country = @country', substitutionValues: {
-      'country': 'YourCountryName', // Replace with actual country filter
-    });
+    List<List<dynamic>> countryResults = await connection.query(
+      'SELECT id, name, category FROM pests WHERE country = @country',
+      substitutionValues: {
+        'country': 'YourCountryName', // Replace with actual country filter
+      },
+    );
 
     // Fetch Global Pest List
-    List<List<dynamic>> globalResults = await connection.query('SELECT id, name, category FROM pests WHERE global = TRUE');
+    List<List<dynamic>> globalResults = await connection.query(
+      'SELECT id, name, category FROM pests WHERE global = TRUE',
+    );
 
     setState(() {
       _countryPests = countryResults.map((row) {
@@ -99,14 +104,13 @@ class _PestListScreenState extends State<PestListScreen> {
           subtitle: Text('Category: ${pest['category']}'),
           trailing: ElevatedButton(
             onPressed: () {
-              // Navigate to the detection survey form with the pest name pre-filled
+              // Navigate to the DynamicSurveyForm with the pest name pre-filled for a detection survey
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SurveyForm(
-                    'detection',
-                    surveyType: 'detection',
-                    initialPestName: pest['name'], // Pass pest name to the survey
+                  builder: (context) => DynamicSurveyForm(
+                    initialPestName: pest['name'], // Pass pest name to the survey form
+                    preSelectedSurveyType: 'detection', // Set the survey type to 'detection'
                   ),
                 ),
               );

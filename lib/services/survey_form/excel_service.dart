@@ -1,24 +1,29 @@
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:excel/excel.dart';
-import 'dart:io';
+import 'dart:typed_data';
 
 class ExcelService {
-   String filePath = 'surveillance_form.xlsx';
+  final String filePath; // Keep the filePath variable
 
   ExcelService(this.filePath);
 
-  // Load and parse Excel file
+  // Load and parse Excel file from assets
   Future<Map<String, List<String>>> loadSurveyFields() async {
-    var fileBytes = File(filePath).readAsBytesSync(); //get the file as bytes
-    var excel = Excel.decodeBytes(fileBytes); //decode the bytes into an excel object
+    // Load the file from assets using rootBundle
+    ByteData data = await rootBundle.load('assets/$filePath');
+    List<int> fileBytes = data.buffer.asUint8List();
 
-    //Store fields from different survey types
+    // Decode the bytes into an Excel object
+    var excel = Excel.decodeBytes(fileBytes);
+
+    // Store fields from different survey types
     Map<String, List<String>> surveys = {
       'delimiting': [],
       'monitoring': [],
       'detection': []
     };
 
-    //iterate through the sheet
+    // Iterate through the sheets
     for (var sheet in excel.tables.keys) {
       if (sheet.toLowerCase() == 'delimiting') {
         surveys['delimiting'] = _getFieldsFromSheet(excel.tables[sheet]!);
@@ -32,6 +37,7 @@ class ExcelService {
     return surveys;
   }
 
+  // Extract fields from a sheet
   List<String> _getFieldsFromSheet(Sheet sheet) {
     List<String> fields = [];
 
