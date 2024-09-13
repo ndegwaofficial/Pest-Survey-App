@@ -21,7 +21,7 @@ class ModeratorDashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PestListScreen()), // Navigate to pest list screen
+                  MaterialPageRoute(builder: (context) => const PestListScreen()), // Navigate to pest list screen
                 );
               },
               child: const Text('View Pest Lists'),
@@ -31,7 +31,7 @@ class ModeratorDashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MapScreen()), // Navigate to map visualization
+                  MaterialPageRoute(builder: (context) => const MapScreen()), // Navigate to map visualization
                 );
               },
               child: const Text('View Pest Distribution Map'),
@@ -41,7 +41,7 @@ class ModeratorDashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ReviewReportsScreen()), // Navigate to report review
+                  MaterialPageRoute(builder: (context) => const ReviewReportsScreen()), // Navigate to report review
                 );
               },
               child: const Text('Review Pest Reports'),
@@ -51,7 +51,7 @@ class ModeratorDashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PestListScreen()), // Navigate to pest management
+                  MaterialPageRoute(builder: (context) => const PestListScreen()), // Navigate to pest management
                 );
               },
               child: const Text('Manage Pests'),

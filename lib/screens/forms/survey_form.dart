@@ -8,7 +8,7 @@ class DynamicSurveyForm extends StatefulWidget {
   final String? initialPestName; // New optional parameter for pest name
   final String? preSelectedSurveyType; // New optional parameter for survey type
 
-  DynamicSurveyForm({this.initialPestName, this.preSelectedSurveyType}); // Constructor update
+  const DynamicSurveyForm({super.key, this.initialPestName, this.preSelectedSurveyType}); // Constructor update
 
   @override
   _DynamicSurveyFormState createState() => _DynamicSurveyFormState();
@@ -40,10 +40,10 @@ class _DynamicSurveyFormState extends State<DynamicSurveyForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dynamic Survey Form'),
+        title: const Text('Dynamic Survey Form'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -52,7 +52,7 @@ class _DynamicSurveyFormState extends State<DynamicSurveyForm> {
               // Officer's name field
               TextFormField(
                 controller: officerController,
-                decoration: InputDecoration(labelText: "Field Surveillance Officer's Name"),
+                decoration: const InputDecoration(labelText: "Field Surveillance Officer's Name"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter officer\'s name';
@@ -60,21 +60,21 @@ class _DynamicSurveyFormState extends State<DynamicSurveyForm> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Pest name field
               TextFormField(
                 controller: pestController,
-                decoration: InputDecoration(labelText: 'Pest Name'),
+                decoration: const InputDecoration(labelText: 'Pest Name'),
                 onChanged: (value) {
                   formData['pest_name'] = value;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Survey Type Dropdown
               DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Select Survey Type'),
+                decoration: const InputDecoration(labelText: 'Select Survey Type'),
                 value: selectedSurveyType, // Pre-select survey type if available
                 items: surveyFields.keys
                     .map((surveyType) => DropdownMenuItem(
@@ -88,7 +88,7 @@ class _DynamicSurveyFormState extends State<DynamicSurveyForm> {
                   });
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Dynamic form fields based on the selected survey type
               if (selectedSurveyType != null)
@@ -101,12 +101,12 @@ class _DynamicSurveyFormState extends State<DynamicSurveyForm> {
                   ),
                 ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Display timestamp
               Text("Timestamp: $timestamp"),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Submit Button
               ElevatedButton(
@@ -119,11 +119,11 @@ class _DynamicSurveyFormState extends State<DynamicSurveyForm> {
                     // Save to database
                     await DatabaseService().saveSurveyData(formData);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Survey Saved')),
+                      const SnackBar(content: Text('Survey Saved')),
                     );
                   }
                 },
-                child: Text('Submit'),
+                child: const Text('Submit'),
               ),
             ],
           ),
@@ -156,7 +156,7 @@ class _DynamicSurveyFormState extends State<DynamicSurveyForm> {
           },
         );
       default:
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
     }
   }
 }

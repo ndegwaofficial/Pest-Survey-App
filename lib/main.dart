@@ -6,7 +6,7 @@ import 'screens/dashboards/fso_dashboard.dart';
 import 'screens/dashboards/moderator_dashboard.dart';
 import 'screens/dashboards/super_admin_dashboard.dart';
 void main() {
-  runApp(PestApp());
+  runApp(const PestApp());
 }
 
 class PestApp extends StatelessWidget {

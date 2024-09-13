@@ -19,7 +19,7 @@ class FarmerDashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NewPestReportForm()), // TODO: Navigate to pest scanner
+                  MaterialPageRoute(builder: (context) => const NewPestReportForm()), // TODO: Navigate to pest scanner
                 );
               },
               child: const Text('Scan Pest'),
@@ -29,7 +29,7 @@ class FarmerDashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NewPestReportForm()), // Navigate to pest report form
+                  MaterialPageRoute(builder: (context) => const NewPestReportForm()), // Navigate to pest report form
                 );
               },
               child: const Text('Report New Pest'),

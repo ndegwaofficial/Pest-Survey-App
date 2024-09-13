@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:postgres/postgres.dart';
 
 class AddModeratorForm extends StatefulWidget {
+  const AddModeratorForm({super.key});
+
   @override
   _AddModeratorFormState createState() => _AddModeratorFormState();
 }
@@ -36,7 +38,7 @@ class _AddModeratorFormState extends State<AddModeratorForm> {
 
       await connection.close();
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Moderator added successfully'),
       ));
 
@@ -48,7 +50,7 @@ class _AddModeratorFormState extends State<AddModeratorForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Moderator'),
+        title: const Text('Add Moderator'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -58,7 +60,7 @@ class _AddModeratorFormState extends State<AddModeratorForm> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the name';
@@ -68,7 +70,7 @@ class _AddModeratorFormState extends State<AddModeratorForm> {
               ),
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the email';
@@ -78,7 +80,7 @@ class _AddModeratorFormState extends State<AddModeratorForm> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -87,10 +89,10 @@ class _AddModeratorFormState extends State<AddModeratorForm> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: Text('Add Moderator'),
+                child: const Text('Add Moderator'),
               ),
             ],
           ),

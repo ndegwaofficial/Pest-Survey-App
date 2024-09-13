@@ -21,7 +21,7 @@ class FSODashboard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PestListScreen()),
+                  MaterialPageRoute(builder: (context) => const PestListScreen()),
                 );
               },
               child: const Text('View Pest Lists'),

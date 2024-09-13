@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:postgres/postgres.dart';
 
 class AddUserForm extends StatefulWidget {
+  const AddUserForm({super.key});
+
   @override
   _AddUserFormState createState() => _AddUserFormState();
 }
@@ -59,7 +61,7 @@ class _AddUserFormState extends State<AddUserForm> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the name';
@@ -69,7 +71,7 @@ class _AddUserFormState extends State<AddUserForm> {
               ),
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the email';
@@ -79,7 +81,7 @@ class _AddUserFormState extends State<AddUserForm> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -100,7 +102,7 @@ class _AddUserFormState extends State<AddUserForm> {
                     _selectedRole = value!;
                   });
                 },
-                decoration: InputDecoration(labelText: 'Role'),
+                decoration: const InputDecoration(labelText: 'Role'),
               ),
               const SizedBox(height: 20),
               ElevatedButton(

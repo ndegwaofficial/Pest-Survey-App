@@ -4,7 +4,7 @@ import 'package:postgres/postgres.dart';
 
 class SuperAdminDashboard extends StatefulWidget {
   // Mark the constructor as const
-  const SuperAdminDashboard({Key? key}) : super(key: key); // Added const
+  const SuperAdminDashboard({super.key}); // Added const
 
   @override
   _SuperAdminDashboardState createState() => _SuperAdminDashboardState();
