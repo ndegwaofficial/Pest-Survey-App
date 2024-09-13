@@ -2,11 +2,11 @@ import 'package:postgres/postgres.dart';
 
 class DatabaseService {
   final connection = PostgreSQLConnection(
-    'host',  // Your PostgreSQL host
+    'localhost',  // Your PostgreSQL host
     5432,    // Port number
-    'database_name',  // Database name
-    username: 'username',  // Your database username
-    password: 'password',  // Your database password
+    'pestsurveillance',  // Database name
+    username: 'ndegwaofficial',  // Your database username
+    password: 'ndegwaofficial',  // Your database password
   );
 
   Future<void> connect() async {

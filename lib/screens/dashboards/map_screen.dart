@@ -24,8 +24,8 @@ class _MapScreenState extends State<MapScreen> {
       'localhost',
       5432,
       'pestsurveillance',
-      username: 'postgres',
-      password: '',
+      username: 'ndegwaofficial',
+      password: 'ndegwaofficial',
     );
     await connection.open();
 

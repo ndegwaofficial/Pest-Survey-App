@@ -21,9 +21,9 @@ class _ReviewReportsScreenState extends State<ReviewReportsScreen> {
     final connection = PostgreSQLConnection(
       'localhost',
       5432,
-      'postgres',
-      username: 'postgres',
-      password: '',
+      'pestsurveillance',
+      username: 'ndegwaofficial',
+      password: 'ndegwaofficial',
     );
     await connection.open();
 
@@ -47,9 +47,9 @@ class _ReviewReportsScreenState extends State<ReviewReportsScreen> {
     final connection = PostgreSQLConnection(
       'localhost',
       5432,
-      'postgres',
-      username: 'postgres',
-      password: '',
+      'pestsurveillance',
+      username: 'ndegwaofficial',
+      password: 'ndegwaofficial',
     );
     await connection.open();
 

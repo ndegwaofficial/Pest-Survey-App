@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pest_survey_app/screens/dashboards/landing_page.dart'; // Import the landing page
 import 'services/authentication/auth_service.dart';
 import 'screens/dashboards/farmer_dashboard.dart';
 import 'screens/dashboards/fso_dashboard.dart';
 import 'screens/dashboards/moderator_dashboard.dart';
 import 'screens/dashboards/super_admin_dashboard.dart';
-
 void main() {
   runApp(PestApp());
 }
@@ -19,7 +19,7 @@ class PestApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const LoginScreen(), // Set the initial screen as the Login Page
+      home: const LandingPage(), // Set the initial screen as the Landing Page
     );
   }
 }

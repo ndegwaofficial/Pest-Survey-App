@@ -24,8 +24,8 @@ class _PestListScreenState extends State<PestListScreen> {
       'localhost',
       5432,
       'pestsurveillance',
-      username: 'postgres',
-      password: '',
+      username: 'ndegwaofficial',
+      password: 'ndegwaofficial',
     );
     await connection.open();
 
