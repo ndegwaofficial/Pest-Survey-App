@@ -17,7 +17,7 @@ class _NewPestReportFormState extends State<NewPestReportForm> {
   Future<void> _submitReport() async {
     if (_formKey.currentState!.validate()) {
       final connection = PostgreSQLConnection(
-        'localhost',
+        '10.100.1.147',
         5432,
         'pestsurveillance',
         username: 'ndegwaofficial',

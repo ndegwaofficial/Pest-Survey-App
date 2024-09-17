@@ -3,9 +3,9 @@ import 'package:postgres/postgres.dart';
 Future<void> submitPestForApproval(
     String imagePath, String pestName, String description, double latitude, double longitude) async {
   final connection = PostgreSQLConnection(
-    'localhost', 5432, 'pestsurveillance',
-    username: 'postgres',
-    password: '',
+    '10.100.1.147', 5432, 'pestsurveillance',
+    username: 'ndegwaofficial',
+    password: 'ndegwaofficial',
   );
 
   try {

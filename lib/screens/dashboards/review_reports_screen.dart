@@ -19,7 +19,7 @@ class _ReviewReportsScreenState extends State<ReviewReportsScreen> {
 
   Future<void> _fetchReports() async {
     final connection = PostgreSQLConnection(
-      'localhost',
+      '',
       5432,
       'pestsurveillance',
       username: 'ndegwaofficial',
@@ -45,7 +45,7 @@ class _ReviewReportsScreenState extends State<ReviewReportsScreen> {
 
   Future<void> _approveReport(int reportId) async {
     final connection = PostgreSQLConnection(
-      'localhost',
+      '10.100.1.147',
       5432,
       'pestsurveillance',
       username: 'ndegwaofficial',

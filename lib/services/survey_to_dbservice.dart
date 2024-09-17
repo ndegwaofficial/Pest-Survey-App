@@ -2,7 +2,7 @@ import 'package:postgres/postgres.dart';
 
 class DatabaseService {
   final connection = PostgreSQLConnection(
-    'localhost',  // Your PostgreSQL host
+    '10.100.1.147',  // 
     5432,    // Port number
     'pestsurveillance',  // Database name
     username: 'ndegwaofficial',  // Your database username

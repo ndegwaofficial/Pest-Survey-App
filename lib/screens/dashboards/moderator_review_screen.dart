@@ -7,9 +7,9 @@ class ModeratorReviewScreen extends StatelessWidget {
 
   Future<List<Map<String, dynamic>>> _fetchPendingPests() async {
     final connection = PostgreSQLConnection(
-      'localhost', 5432, 'pestsurveillance',
-      username: 'postgres',
-      password: '',
+      '10.100.1.147', 5432, 'pestsurveillance',
+      username: 'ndegwaofficial',
+      password: 'ndegwaofficial',
     );
 
     await connection.open();
@@ -28,9 +28,9 @@ class ModeratorReviewScreen extends StatelessWidget {
 
   Future<void> _approvePest(int pestId) async {
     final connection = PostgreSQLConnection(
-      'localhost', 5432, 'pestsurveillance',
-      username: 'postgres',
-      password: '',
+      '10.100.1.147', 5432, 'pestsurveillance',
+      username: 'ndegwaofficial',
+      password: 'ndegwaofficial',
     );
 
     await connection.open();

@@ -21,7 +21,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _fetchPestData() async {
     final connection = PostgreSQLConnection(
-      'localhost',
+      '10.100.1.147',
       5432,
       'pestsurveillance',
       username: 'ndegwaofficial',

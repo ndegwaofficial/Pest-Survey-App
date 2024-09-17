@@ -3,7 +3,8 @@ import 'package:postgres/postgres.dart';
 // AuthService manages logging in users
 class AuthService {
   final connection = PostgreSQLConnection(
-    'localhost', // for now localhost
+    // 'localhost', // for now localhost
+    '10.100.1.147',
     5432,
     'pestsurveillance', // DB Name
     username: 'ndegwaofficial',

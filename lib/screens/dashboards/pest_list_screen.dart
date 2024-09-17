@@ -21,7 +21,7 @@ class _PestListScreenState extends State<PestListScreen> {
 
   Future<void> _fetchPests() async {
     final connection = PostgreSQLConnection(
-      'localhost',
+      '10.100.1.147',
       5432,
       'pestsurveillance',
       username: 'ndegwaofficial',
