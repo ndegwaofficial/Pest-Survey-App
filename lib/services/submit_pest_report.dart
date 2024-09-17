@@ -4,8 +4,8 @@ Future<void> submitPestForApproval(
     String imagePath, String pestName, double latitude, double longitude) async {
   final connection = PostgreSQLConnection(
     '10.100.1.147', 5432, 'pestsurveillance',
-    username: 'postgres',
-    password: '',
+    username: 'ndegwaofficial',
+    password: 'ndegwaofficial',
   );
 
   try {

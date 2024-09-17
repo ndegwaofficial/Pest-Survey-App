@@ -38,7 +38,6 @@ class FarmerDashboard extends StatelessWidget {
                       await submitPestForApproval(
                         imagePath,
                         pestDetails['pest_name']!,
-                        pestDetails['description']!,
                         position.latitude,
                         position.longitude,
                       );
