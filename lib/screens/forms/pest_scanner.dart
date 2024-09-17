@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import '../../services/pest_detection_service.dart'; // Import the pest detection service
 
 class PestScanner extends StatefulWidget {
   @override
@@ -11,43 +12,50 @@ class PestScanner extends StatefulWidget {
 class _PestScannerState extends State<PestScanner> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
-  late List<CameraDescription> cameras;
+  late PestDetectionService _pestDetectionService; // Add pest detection service
 
   @override
   void initState() {
     super.initState();
     _initializeCamera();
+    _pestDetectionService = PestDetectionService(); // Initialize the pest detection service
   }
 
   Future<void> _initializeCamera() async {
     try {
-      cameras = await availableCameras();
+      final cameras = await availableCameras();
       _controller = CameraController(cameras[0], ResolutionPreset.high);
       _initializeControllerFuture = _controller.initialize();
-      setState(() {}); // Rebuild the widget after initializing the controller
     } catch (e) {
       print('Error initializing camera: $e');
     }
   }
 
-  Future<void> _takePicture() async {
-    try {
-      await _initializeControllerFuture; // Wait for the camera to initialize
+Future<void> _captureAndDetect() async {
+  try {
+    await _initializeControllerFuture; // Wait for the camera to initialize
 
-      final image = await _controller.takePicture(); // Capture the image
+    // Take the picture and get the XFile object
+    final XFile image = await _controller.takePicture();
 
-      // Save image to temporary directory
-      final tempDir = await getTemporaryDirectory();
-      final imagePath = '${tempDir.path}/${DateTime.now()}.jpg';
-      final File imageFile = File(image.path);
-      await imageFile.copy(imagePath);
+    // Save the image to the temporary directory
+    final tempDir = await getTemporaryDirectory();
+    final imagePath = '${tempDir.path}/${DateTime.now()}.jpg';
+    final File imageFile = File(image.path); // Convert XFile to File
+    await imageFile.copy(imagePath); // Copy the image to the desired location
 
-      Navigator.pop(context, imagePath); // Return image path to the previous screen
-
-    } catch (e) {
-      print(e);
-    }
+    // Pass the image path and continue with pest identification
+    String pestName = await _pestDetectionService.identifyPest(File(imagePath));
+    Navigator.pop(context, {
+      'imagePath': imagePath,
+      'pestName': pestName,
+    });
+    
+  } catch (e) {
+    print('Error during capture and detection: $e');
   }
+}
+
 
   @override
   void dispose() {
@@ -59,7 +67,7 @@ class _PestScannerState extends State<PestScanner> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Scan Pest')),
-      // FutureBuilder will only display the camera preview only after camera is fully initialized
+      // FutureBuilder will only display the camera preview after the camera is fully initialized
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
@@ -77,7 +85,7 @@ class _PestScannerState extends State<PestScanner> {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.camera),
-        onPressed: _takePicture, // Capture image when button is pressed
+        onPressed: _captureAndDetect, // Capture image and run the pest detection
       ),
     );
   }
