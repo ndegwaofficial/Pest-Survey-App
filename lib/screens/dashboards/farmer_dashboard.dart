@@ -3,6 +3,8 @@ import 'package:pest_survey_app/screens/forms/new_pest_report_form.dart';
 import 'package:pest_survey_app/screens/forms/pest_scanner.dart';
 import 'package:pest_survey_app/services/submit_pest_report.dart';
 import 'package:geolocator/geolocator.dart'; // Import geolocator
+import 'dart:io'; // For handling file
+import 'package:path/path.dart' as path; // To work with file paths
 
 class FarmerDashboard extends StatelessWidget {
   const FarmerDashboard({super.key});
@@ -20,26 +22,31 @@ class FarmerDashboard extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 // Navigate to Pest Scanner and capture image
-                final imagePath = await Navigator.push(
+                final Map<String, dynamic>? scanResult = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => PestScanner()),
                 );
 
-                if (imagePath != null) {
-                  // Ask for pest details (pest name and description)
-                  final pestDetails = await _askForPestDetails(context);
+                if (scanResult != null) {
+                  final String imagePath = scanResult['imagePath']; // Image file path
+                  final String pestName = scanResult['pestName']; // Pest name from model
+
+                  // Ask for pest details (pest description)
+                  final pestDetails = await _askForPestDetails(context, pestName);
 
                   if (pestDetails != null) {
                     // Capture the location of the pest using GPS
-                    final position = await _determinePosition(context); // context passed to handle GPS
+                    final position = await _determinePosition(context);
 
                     if (position != null) {
-                      // Submit the pest report with additional metadata
+                      // Submit the pest report with additional metadata (image, pest name, location)
                       await submitPestForApproval(
-                        imagePath,
+                        File(imagePath), // Submit the image as a File
                         pestDetails['pest_name']!,
+                        pestDetails['description']!,
                         position.latitude,
                         position.longitude,
+                        context
                       );
 
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -67,9 +74,8 @@ class FarmerDashboard extends StatelessWidget {
     );
   }
 
-  // Function to ask for pest name and description
-  Future<Map<String, String>?> _askForPestDetails(BuildContext context) async {
-    TextEditingController pestNameController = TextEditingController();
+  // Function to ask for pest description
+  Future<Map<String, String>?> _askForPestDetails(BuildContext context, String pestName) async {
     TextEditingController pestDescriptionController = TextEditingController();
 
     return await showDialog<Map<String, String>?>(
@@ -80,11 +86,12 @@ class FarmerDashboard extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
-                controller: pestNameController,
-                decoration: const InputDecoration(hintText: 'Pest Name'),
+              TextFormField(
+                initialValue: pestName, // Display the pest name returned by the model
+                readOnly: true, // Make it non-editable since it's model-determined
+                decoration: const InputDecoration(labelText: 'Pest Name'),
               ),
-              TextField(
+              TextFormField(
                 controller: pestDescriptionController,
                 decoration: const InputDecoration(hintText: 'Description'),
               ),
@@ -101,7 +108,7 @@ class FarmerDashboard extends StatelessWidget {
               child: const Text('Submit'),
               onPressed: () {
                 Navigator.of(context).pop({
-                  'pest_name': pestNameController.text,
+                  'pest_name': pestName,
                   'description': pestDescriptionController.text,
                 });
               },
@@ -120,7 +127,6 @@ class FarmerDashboard extends StatelessWidget {
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Location services are not enabled, return null.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Location services are disabled.')),
       );
@@ -131,7 +137,6 @@ class FarmerDashboard extends StatelessWidget {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // Permissions are denied, return null.
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Location permissions are denied.')),
         );
@@ -140,7 +145,6 @@ class FarmerDashboard extends StatelessWidget {
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, return null.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Location permissions are permanently denied.')),
       );

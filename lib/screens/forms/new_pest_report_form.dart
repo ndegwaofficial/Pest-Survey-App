@@ -23,24 +23,33 @@ class _NewPestReportFormState extends State<NewPestReportForm> {
         username: 'ndegwaofficial',
         password: 'ndegwaofficial',
       );
-      await connection.open();
 
-      await connection.query('''
-        INSERT INTO reports (pest_name, location, details, created_at)
-        VALUES (@pest_name, @location, @details, NOW())
-      ''', substitutionValues: {
-        'pest_name': _pestNameController.text,
-        'location': _locationController.text,
-        'details': _detailsController.text,
-      });
+      try {
+        await connection.open();
 
-      await connection.close();
+        await connection.query('''
+          INSERT INTO reports (pest_name, location, details, created_at)
+          VALUES (@pest_name, @location, @details, NOW())
+        ''', substitutionValues: {
+          'pest_name': _pestNameController.text,
+          'location': _locationController.text,
+          'details': _detailsController.text,
+        });
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Pest report submitted successfully!'),
-      ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pest report submitted successfully!')),
+        );
+        Navigator.pop(context);  // Return to Farmer Dashboard after success
+      } catch (e) {
+        print('Error submitting report: $e');  // Log the error for developers
 
-      Navigator.pop(context); // Return to Farmer Dashboard
+        // Show user-friendly error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to submit report. Please try again. Error: $e')),
+        );
+      } finally {
+        await connection.close();
+      }
     }
   }
 
