@@ -1,73 +1,133 @@
+import 'dart:io'; // For File handling
 import 'package:flutter/material.dart';
-import 'package:postgres/postgres.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:geolocator/geolocator.dart'; // For GPS coordinates
+import 'package:pest_survey_app/services/submit_pest_report.dart';
 
 class NewPestReportForm extends StatefulWidget {
-  const NewPestReportForm({super.key});
-
   @override
   _NewPestReportFormState createState() => _NewPestReportFormState();
 }
 
 class _NewPestReportFormState extends State<NewPestReportForm> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _pestNameController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _detailsController = TextEditingController();
+  TextEditingController _pestNameController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
+  File? _image; // To store the selected image
+  final ImagePicker _picker = ImagePicker();
 
-  Future<void> _submitReport() async {
+  Position? _currentPosition; // To store the current GPS position
+
+  // Pick an image from the camera or gallery
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera); // Change to gallery if needed
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  // Get the current GPS position
+  Future<void> _getPosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Location services are disabled.')),
+      );
+      return;
+    }
+
+    // Check location permissions
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Location permissions are denied.')),
+        );
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Location permissions are permanently denied.')),
+      );
+      return;
+    }
+
+    // Get the position if permissions are granted
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _currentPosition = position;
+    });
+  }
+
+  // Submit the pest report
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      final connection = PostgreSQLConnection(
-        '10.100.1.147',
-        5432,
-        'pestsurveillance',
-        username: 'ndegwaofficial',
-        password: 'ndegwaofficial',
+      if (_image == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please upload an image.')),
+        );
+        return;
+      }
+
+      if (_currentPosition == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please enable GPS to capture location.')),
+        );
+        return;
+      }
+
+      final pestName = _pestNameController.text;
+      final description = _descriptionController.text;
+
+      // Submit the pest report with all the details
+      await submitPestForApproval(
+        _image!,
+        pestName,
+        description,
+        _currentPosition!.latitude,
+        _currentPosition!.longitude,
+        context,
       );
 
-      try {
-        await connection.open();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Pest report submitted for moderator approval!')),
+      );
 
-        await connection.query('''
-          INSERT INTO reports (pest_name, location, details, created_at)
-          VALUES (@pest_name, @location, @details, NOW())
-        ''', substitutionValues: {
-          'pest_name': _pestNameController.text,
-          'location': _locationController.text,
-          'details': _detailsController.text,
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pest report submitted successfully!')),
-        );
-        Navigator.pop(context);  // Return to Farmer Dashboard after success
-      } catch (e) {
-        print('Error submitting report: $e');  // Log the error for developers
-
-        // Show user-friendly error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to submit report. Please try again. Error: $e')),
-        );
-      } finally {
-        await connection.close();
-      }
+      // Clear the form after submission
+      _formKey.currentState?.reset();
+      setState(() {
+        _image = null;
+        _currentPosition = null;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('New Pest Report'),
-      ),
+      appBar: AppBar(title: Text('New Pest Report')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: [
+          child: ListView(
+            children: <Widget>[
+              // Pest Name field
               TextFormField(
                 controller: _pestNameController,
-                decoration: const InputDecoration(labelText: 'Pest Name'),
+                decoration: InputDecoration(labelText: 'Pest Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the pest name';
@@ -75,31 +135,50 @@ class _NewPestReportFormState extends State<NewPestReportForm> {
                   return null;
                 },
               ),
+              SizedBox(height: 20),
+
+              // Description field
               TextFormField(
-                controller: _locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                controller: _descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the location';
+                    return 'Please enter a description';
                   }
                   return null;
                 },
               ),
-              TextFormField(
-                controller: _detailsController,
-                decoration: const InputDecoration(labelText: 'Details'),
-                maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please provide details about the pest';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
+
+              // Upload Image Button
               ElevatedButton(
-                onPressed: _submitReport,
-                child: const Text('Submit Report'),
+                onPressed: _pickImage, // Pick an image when the button is pressed
+                child: Text(_image == null ? 'Upload Image' : 'Change Image'),
+              ),
+
+              // Show selected image preview
+              if (_image != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Image.file(_image!),
+                ),
+
+              SizedBox(height: 20),
+
+              // GPS Coordinates (Capture GPS)
+              ElevatedButton(
+                onPressed: _getPosition,
+                child: Text(_currentPosition == null
+                    ? 'Capture GPS Coordinates'
+                    : 'Coordinates: ${_currentPosition!.latitude}, ${_currentPosition!.longitude}'),
+              ),
+
+              SizedBox(height: 20),
+
+              // Submit Button
+              ElevatedButton(
+                onPressed: _submitForm, // Submit the form when pressed
+                child: Text('Submit Report'),
               ),
             ],
           ),
