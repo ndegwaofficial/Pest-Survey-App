@@ -11,8 +11,9 @@ class PestScanner extends StatefulWidget {
 
 class _PestScannerState extends State<PestScanner> {
   late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
+  late Future<void> _initializeControllerFuture; // Declare future properly
   late PestDetectionService _pestDetectionService; // Add pest detection service
+  bool _cameraInitialized = false; // Track if camera is initialized
 
   @override
   void initState() {
@@ -24,38 +25,50 @@ class _PestScannerState extends State<PestScanner> {
   Future<void> _initializeCamera() async {
     try {
       final cameras = await availableCameras();
-      _controller = CameraController(cameras[0], ResolutionPreset.high);
-      _initializeControllerFuture = _controller.initialize();
+      if (cameras.isNotEmpty) {
+        _controller = CameraController(cameras[0], ResolutionPreset.high);
+        _initializeControllerFuture = _controller.initialize();
+        await _initializeControllerFuture;
+        setState(() {
+          _cameraInitialized = true; // Mark camera as initialized
+        });
+      } else {
+        throw Exception('No camera available');
+      }
     } catch (e) {
       print('Error initializing camera: $e');
     }
   }
 
-Future<void> _captureAndDetect() async {
-  try {
-    await _initializeControllerFuture; // Wait for the camera to initialize
+  Future<void> _captureAndDetect() async {
+    if (!_cameraInitialized) {
+      print('Camera not initialized yet');
+      return;
+    }
 
-    // Take the picture and get the XFile object
-    final XFile image = await _controller.takePicture();
+    try {
+      await _initializeControllerFuture; // Wait for the camera to initialize
 
-    // Save the image to the temporary directory
-    final tempDir = await getTemporaryDirectory();
-    final imagePath = '${tempDir.path}/${DateTime.now()}.jpg';
-    final File imageFile = File(image.path); // Convert XFile to File
-    await imageFile.copy(imagePath); // Copy the image to the desired location
+      // Take the picture and get the XFile object
+      final XFile image = await _controller.takePicture();
 
-    // Pass the image path and continue with pest identification
-    String pestName = await _pestDetectionService.identifyPest(File(imagePath));
-    Navigator.pop(context, {
-      'imagePath': imagePath,
-      'pestName': pestName,
-    });
-    
-  } catch (e) {
-    print('Error during capture and detection: $e');
+      // Save the image to the temporary directory
+      final tempDir = await getTemporaryDirectory();
+      final imagePath = '${tempDir.path}/${DateTime.now()}.jpg';
+      final File imageFile = File(image.path); // Convert XFile to File
+      await imageFile.copy(imagePath); // Copy the image to the desired location
+
+      // Pass the image path and continue with pest identification
+      String pestName = await _pestDetectionService.identifyPest(File(imagePath));
+      Navigator.pop(context, {
+        'imagePath': imagePath,
+        'pestName': pestName,
+      });
+      
+    } catch (e) {
+      print('Error during capture and detection: $e');
+    }
   }
-}
-
 
   @override
   void dispose() {
@@ -71,7 +84,7 @@ Future<void> _captureAndDetect() async {
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.done && _cameraInitialized) {
             // If the future is complete, display the camera preview
             return CameraPreview(_controller);
           } else if (snapshot.hasError) {
@@ -83,10 +96,12 @@ Future<void> _captureAndDetect() async {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.camera),
-        onPressed: _captureAndDetect, // Capture image and run the pest detection
-      ),
+      floatingActionButton: _cameraInitialized
+          ? FloatingActionButton(
+              child: const Icon(Icons.camera),
+              onPressed: _captureAndDetect, // Capture image and run the pest detection
+            )
+          : null, // Disable button if camera is not initialized
     );
   }
 }
