@@ -1,5 +1,7 @@
+// lib/screens/dashboards/moderator_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:pest_survey_app/screens/dashboards/pest_list_screen.dart';
+import 'package:pest_survey_app/screens/forms/create_task_form.dart'; // Import the task assignment form
 import 'map_screen.dart'; // Assuming pest distribution map is in this file
 import 'review_reports_screen.dart'; // For reviewing pest reports
 import 'package:pest_survey_app/screens/forms/add_user_form.dart'; // Import the AddUserForm for creating accounts
@@ -57,7 +59,6 @@ class ModeratorDashboard extends StatelessWidget {
               child: const Text('Manage Pests'),
             ),
             const SizedBox(height: 20),
-            // New Button for Adding FSOs and Farmers
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -65,7 +66,18 @@ class ModeratorDashboard extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => AddUserForm()), // Navigate to the form for adding FSOs and Farmers
                 );
               },
-              child: const Text('Add FSO/Farmer'), // Button text for adding accounts
+              child: const Text('Add FSO/Farmer'),
+            ),
+            const SizedBox(height: 20),
+            // New Button to Assign Tasks to FSOs
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreateTaskForm()), // Navigate to the form for assigning tasks to FSOs
+                );
+              },
+              child: const Text('Assign Task to FSO'), // New button for task assignment
             ),
           ],
         ),
